@@ -2,46 +2,48 @@
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 
-$apiKey = "csk-6fv2cyxkvr4h3rkhdj338w2v44p4vrjf8899hkf52t89t93j";
+$apiKey = "AQ.Ab8RN6KcgoekQzcmZoUqkH5bBOAY8_HRG712-G9zJzpHuVTCjQ";
+
 if (!$apiKey) {
     http_response_code(500);
     echo json_encode(['error' => 'API key not configured']);
     exit;
 }
 
-$url = "https://api.cerebras.ai/v1/chat/completions";
-
-$suject = $_GET["suj"] ?? "js";
+$subject = $_GET["suj"] ?? "js";
 
 $prompt = "
-Generate exactly 10 questions about $suject. D'ont want this'```json\'
-Return ONLY a valid JSON array with this format (no explanation, no text outside JSON):
+Generate exactly 5 questions about $subject.
+Return ONLY a valid JSON array with this format (no explanation, no markdown, no text outside JSON):
 
 [
   {
-    'question': 'string',
-    'choices': ['choice1', 'choice2', 'choice3', 'choice4'],
-    'correctAnswer': 'one of the choices'
+    \"question\": \"string\",
+    \"choices\": [\"choice1\", \"choice2\", \"choice3\", \"choice4\"],
+    \"correctAnswer\": \"one of the choices\"
   }
 ]
 ";
 
-$ch = curl_init($url);
+$url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=" . $apiKey;
+
 $data = [
-    "model" => "gemma-4-31b",
-    "messages" => [
-        ["role" => "system", "content" => "you assistant"],
-        ["role" => "user", "content" => $prompt]
+    "contents" => [
+        ["parts" => [["text" => $prompt]]]
     ],
-    "temperature" => 0.7
+    "generationConfig" => [
+        "temperature" => 0.7,
+        "responseMimeType" => "application/json"
+    ]
 ];
+
+$ch = curl_init($url);
 
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    "Content-Type: application/json",
-    "Authorization: Bearer " . $apiKey
+    "Content-Type: application/json"
 ]);
 
 $res = curl_exec($ch);
@@ -57,10 +59,26 @@ curl_close($ch);
 
 $res = json_decode($res, true);
 
-if (!isset($res['choices'][0]['message']['content'])) {
+if (!isset($res['candidates'][0]['content']['parts'][0]['text'])) {
     http_response_code(502);
     echo json_encode(['error' => 'Invalid API response', 'details' => $res]);
     exit;
 }
 
-echo json_encode($res['choices'][0]['message']['content']);
+$text = trim($res['candidates'][0]['content']['parts'][0]['text']);
+
+// Remove ```json fences if Gemini still adds them
+$text = preg_replace('/^```(json)?\s*/i', '', $text);
+$text = preg_replace('/\s*```$/', '', $text);
+$text = trim($text);
+
+// Validate it is valid JSON, then output it directly (not double-encoded)
+$questions = json_decode($text, true);
+
+if (json_last_error() !== JSON_ERROR_NONE) {
+    http_response_code(502);
+    echo json_encode(['error' => 'Invalid JSON from Gemini', 'details' => $text]);
+    exit;
+}
+
+echo json_encode($questions);

@@ -44,7 +44,8 @@ async function GenerateQuiz() {
         let res = await fetch(`api.php?suj=${encodeURIComponent(Subj)}`)
 
         res = await res.json()
-        return JSON.parse(res)
+        console.log(res)
+        return res
     }catch(error){
         console.log(error)
         alert("please try again")

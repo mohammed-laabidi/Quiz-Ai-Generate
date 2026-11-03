@@ -1,22 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QuizAi</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <div class="container">
-        <h1>QuizAi</h1>
-        <div class="input_box">
-            <input type="text" id="quizSubjectInput" placeholder="Enter subject (e.g. js, php, python)">
-            <button id="btnGenerate">Generate Quiz</button>
-            <button id="btn_show_saved">Show Saved</button>
+
+    <header>
+        <h1>Quiz<span>Ai</span></h1>
+        <p class="title-description">Generate AI-powered quizzes on any subject instantly.</p>
+        <button id="show-saved-button">Show Saved</button>
+        <div class="score-box">
+            <span id="score-display">Score : 0 / 0</span>
         </div>
-        <div class="question_box"></div>
-    </div>
-    <div id="saved_questions_box"></div>
+        <div id="saved-questions-box"></div>
+    </header>
+
+    <main class="app-container">
+
+        <div class="form-genarate">
+            <input type="text" id="quiz-subject-input" placeholder="Enter subject (e.g. js, php, python)">
+            <button id="generate-quiz-button">Generate Quiz</button>
+        </div>
+
+        <div class="quizQuestionBox" ></div>
+
+    </main>
+
     <script src="script.js"></script>
 </body>
+
 </html>

@@ -2,9 +2,9 @@
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 
-$apiKey = "AQ.Ab8RN6KcgoekQzcmZoUqkH5bBOAY8_HRG712-G9zJzpHuVTCjQ";
+$apiKeyGemini = getenv("API_KEY");
 
-if (!$apiKey) {
+if (!$apiKeyGemini) {
     http_response_code(500);
     echo json_encode(['error' => 'API key not configured']);
     exit;
@@ -25,7 +25,7 @@ Return ONLY a valid JSON array with this format (no explanation, no markdown, no
 ]
 ";
 
-$url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=" . $apiKey;
+$url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=" . $apiKeyGemini;
 
 $data = [
     "contents" => [

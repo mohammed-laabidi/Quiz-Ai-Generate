@@ -13,14 +13,22 @@ if (!$apiKeyGemini) {
 $subject = $_GET["suj"] ?? "js";
 
 $prompt = "
-Generate exactly 5 questions about $subject.
-Return ONLY a valid JSON array with this format (no explanation, no markdown, no text outside JSON):
+Générez exactement 5 questions de QCM sur le sujet spécifié ci-dessous.
 
+<subject>
+$subject
+</subject>
+
+Exigences de structure pour chaque question :
+- Contenir 4 choix de réponses distincts.
+- 'correctAnswer' doit correspondre exactement à l'une des 4 options présentées dans 'choices'.
+
+Format JSON strict à respecter :
 [
   {
-    \"question\": \"string\",
-    \"choices\": [\"choice1\", \"choice2\", \"choice3\", \"choice4\"],
-    \"correctAnswer\": \"one of the choices\"
+    'question': 'Texte de la question',
+    'choices': ['Option A', 'Option B', 'Option C', 'Option D'],
+    'correctAnswer': 'Option of options'
   }
 ]
 ";

@@ -24,9 +24,9 @@ if (quizData.length === 0) {
     quizQuestionBox.innerHTML = "<p class='noQuizMessage'>No quiz yet.</p>"
 }
 
-// Restore state from localStorage
-currentQuestionIndex = Number(localStorage.getItem(QUIZ_STATE_KEY)) || 0;
-savedQuestions = JSON.parse(localStorage.getItem(SAVED_QUESTIONS_KEY)) || [];
+// Restore state from sessionStorage
+currentQuestionIndex = Number(sessionStorage.getItem(QUIZ_STATE_KEY)) || 0;
+savedQuestions = JSON.parse(sessionStorage.getItem(SAVED_QUESTIONS_KEY)) || [];
 
 // Escape HTML to prevent XSS attacks
 function escapeHtml(text) {
@@ -61,10 +61,10 @@ async function fetchQuizQuestions() {
         if (response.ok) {
             clearTimeout(timeoutId)
 
-            // Reset all state and localStorage for a clean start
-            localStorage.removeItem(QUIZ_DATA_KEY)
-            localStorage.removeItem(QUIZ_HISTORY_KEY)
-            localStorage.removeItem(QUIZ_STATE_KEY)
+            // Reset all state and sessionStorage for a clean start
+            sessionStorage.removeItem(QUIZ_DATA_KEY)
+            sessionStorage.removeItem(QUIZ_HISTORY_KEY)
+            sessionStorage.removeItem(QUIZ_STATE_KEY)
             quizHistory = {};
             quizData = [];
             currentQuestionIndex = 0;
@@ -170,7 +170,7 @@ generateQuizButton.onclick = async () => {
         persistQuizData()
     }
 
-    localStorage.setItem(QUIZ_STATE_KEY, currentQuestionIndex)
+    sessionStorage.setItem(QUIZ_STATE_KEY, currentQuestionIndex)
 
     renderQuizQuestion()
 
@@ -186,7 +186,7 @@ function navigateQuiz(direction) {
         return
     }
 
-    localStorage.setItem(QUIZ_STATE_KEY, currentQuestionIndex)
+    sessionStorage.setItem(QUIZ_STATE_KEY, currentQuestionIndex)
     renderQuizQuestion()
 }
 
@@ -217,7 +217,7 @@ function CompletedQuiz() {
         // Auto-advance to next question after 1 second
         setTimeout(() => {
             currentQuestionIndex++
-            localStorage.setItem(QUIZ_STATE_KEY, currentQuestionIndex)
+            sessionStorage.setItem(QUIZ_STATE_KEY, currentQuestionIndex)
             renderQuizQuestion()
         }, 1000)
     }
@@ -226,7 +226,7 @@ function CompletedQuiz() {
 // Answer history and score
 function loadQuizHistory() {
     try {
-        const storedHistory = JSON.parse(localStorage.getItem(QUIZ_HISTORY_KEY) || "{}")
+        const storedHistory = JSON.parse(sessionStorage.getItem(QUIZ_HISTORY_KEY) || "{}")
         if (!storedHistory || Array.isArray(storedHistory)) return {}
 
         return storedHistory
@@ -237,14 +237,14 @@ function loadQuizHistory() {
 
 function persistQuizHistory() {
     try {
-        localStorage.setItem(QUIZ_HISTORY_KEY, JSON.stringify(quizHistory))
+        sessionStorage.setItem(QUIZ_HISTORY_KEY, JSON.stringify(quizHistory))
     } catch (error) {
     }
 }
 
 function loadQuizData() {
     try {
-        const storedQuizData = JSON.parse(localStorage.getItem(QUIZ_DATA_KEY) || "null")
+        const storedQuizData = JSON.parse(sessionStorage.getItem(QUIZ_DATA_KEY) || "null")
         if (!Array.isArray(storedQuizData) || storedQuizData.length === 0) return null
 
         const isValidQuizData = storedQuizData.every(quiz =>
@@ -266,7 +266,7 @@ function loadQuizData() {
 
 function persistQuizData() {
     try {
-        localStorage.setItem(QUIZ_DATA_KEY, JSON.stringify(quizData))
+        sessionStorage.setItem(QUIZ_DATA_KEY, JSON.stringify(quizData))
     } catch (error) {
         console.log("Could not save quiz data", error)
     }
@@ -333,12 +333,12 @@ function recordAnswer(quiz, questionId, selectedOption) {
     updateScore()
 }
 
-// Save current question to localStorage
+// Save current question to sessionStorage
 function saveCurrentQuestion() {
     const questionText = quizQuestionBox.querySelector("h2 p").textContent
     if (!savedQuestions.includes(questionText)) {
         savedQuestions.push(questionText)
-        localStorage.setItem(SAVED_QUESTIONS_KEY, JSON.stringify(savedQuestions))
+        sessionStorage.setItem(SAVED_QUESTIONS_KEY, JSON.stringify(savedQuestions))
         renderSavedQuestions()
         alert("Question saved")
     } else {
@@ -380,7 +380,7 @@ savedQuestionsBox.addEventListener("click", (event) => {
 // Delete a saved question by index
 function deleteSavedQuestion(questionIndex) {
     savedQuestions.splice(questionIndex, 1)
-    localStorage.setItem(SAVED_QUESTIONS_KEY, JSON.stringify(savedQuestions))
+    sessionStorage.setItem(SAVED_QUESTIONS_KEY, JSON.stringify(savedQuestions))
     renderSavedQuestions()
 }
 
@@ -405,11 +405,11 @@ function renderSavedQuestions() {
     const storedQuizData = loadQuizData()
     if (storedQuizData) {
         quizData = storedQuizData
-        const storedQuestionIndex = Number(localStorage.getItem(QUIZ_STATE_KEY))
+        const storedQuestionIndex = Number(sessionStorage.getItem(QUIZ_STATE_KEY))
         currentQuestionIndex = Number.isInteger(storedQuestionIndex)
             ? Math.min(Math.max(storedQuestionIndex, 0), quizData.length - 1)
             : 0
-        localStorage.setItem(QUIZ_STATE_KEY, currentQuestionIndex)
+        sessionStorage.setItem(QUIZ_STATE_KEY, currentQuestionIndex)
         renderQuizQuestion()
     }
 

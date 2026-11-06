@@ -6,7 +6,7 @@ QuizAi is a dynamic quiz generation platform that leverages the Gemini AI API to
 
 - **AI-Powered Generation**: Instantly generates 5 multiple-choice questions based on any subject provided by the user.
 - **Real-time Scoring**: Tracks and displays the user's score as they progress through the quiz.
-- **State Persistence**: Uses `localStorage` to save quiz progress, answer history, and generated questions, allowing users to resume where they left off.
+- **State Persistence**: Uses **PHP Sessions** to save quiz progress, answer history, and generated questions, allowing users to resume where they left off.
 - **Save for Later**: Users can save specific questions they find interesting or challenging to a dedicated "Saved Questions" list.
 - **Dynamic UI**: Responsive interface with animations for a smooth user experience.
 
@@ -15,7 +15,7 @@ QuizAi is a dynamic quiz generation platform that leverages the Gemini AI API to
 - **Frontend**: HTML, CSS, JavaScript (Vanilla)
 - **Backend**: PHP
 - **AI Engine**: Google Gemini API (`gemini-3.5-flash-lite`)
-- **Storage**: Browser `localStorage`
+- **Storage**: PHP Session Management
 
 ## 📦 Installation & Setup
 
@@ -26,9 +26,8 @@ QuizAi is a dynamic quiz generation platform that leverages the Gemini AI API to
    ```
 
 2. **Configure Environment**:
-   The project requires an API key from Google AI Studio. Set the environment variable `API_KEY` on your server:
-   - **XAMPP/Apache**: Add it to your virtual host configuration or set it via the OS environment variables.
-   - **Example (.env or server config)**: `API_KEY=your_gemini_api_key_here`
+   The project requires an API key from Google AI Studio. You can set the `API_KEY` in the `.htaccess` file:
+   - Open `.htaccess` and update the line: `SetEnv API_KEY "your_gemini_api_key_here"`
 
 3. **Run the Project**:
    - Place the folder in your local server directory (e.g., `C:\xampp\htdocs\`).
